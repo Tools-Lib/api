@@ -1,2 +1,2 @@
 # api
-the api bitch
+REST API
