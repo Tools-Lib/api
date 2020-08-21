@@ -1,5 +1,5 @@
 const express = require('express');
-const consola = require("consola"); 
+const consola = require("consola");
 const app = express();
 const port = 8080;
 
@@ -16,8 +16,17 @@ app.use(function iper(req, res, next) {
 })
 
 app.use((req, res, next)=> {
-  	consola.info(` [${app.getDate().getMonth() + "/" + app.getDate().getDate() + "/" + app.getDate().getFullYear()}] - [${app.getIP()}] => [${req.method}] [${req.baseUrl + req.path}] `);
-  	next();
+  	consola.info(` [${app.getDate().getHours() + ":" + app.getDate().getMinutes() + ":" + app.getDate().getSeconds() + " " +app.getDate().getMonth() + "/" + app.getDate().getDate() + "/" + app.getDate().getFullYear()}] - [${app.getIP()}] => [${req.method}] [${req.baseUrl + req.path}] `);
+
+    let headers = req.headers;
+    console.log(headers);
+    if(headers["x-accesstoken"]) {
+      next();
+    } else {
+      res.sendStatus(401);
+    }
+
+
 })
 app.use("/", require("./routes"));
 
