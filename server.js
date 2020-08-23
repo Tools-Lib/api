@@ -3,6 +3,7 @@ const consola = require("consola");
 const bcrypt = require('bcrypt');
 const bodyParser = require('body-parser');
 
+
 const mysql = require("./db/connect.js");
 const app = express();
 const port = 8080;
