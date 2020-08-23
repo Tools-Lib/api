@@ -1,10 +1,14 @@
 const express = require('express');
 const consola = require("consola");
 const bcrypt = require('bcrypt');
+const bodyParser = require('body-parser');
+
 const mysql = require("./db/connect.js");
 const app = express();
 const port = 8080;
 
+
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(function timeLog (req, res, next) {
   app.getDate = () => { return new Date() }
   next();
@@ -18,10 +22,16 @@ app.use(function iper(req, res, next) {
 })
 
 app.use((req, res, next)=> {
+    res.header("Access-Control-Allow-Origin", "https://toolslib.co");
+    res.header("Access-Control-Allow-Headers", "X-Requested-With")
   	consola.info(`[${app.getDate().getHours() + ":" + app.getDate().getMinutes() + ":" + app.getDate().getSeconds() + " " +app.getDate().getMonth() + "/" + app.getDate().getDate() + "/" + app.getDate().getFullYear()}] [${req.method}] - [${app.getIP()}] => [${req.baseUrl + req.path}] `);
     let fullPath = req.baseUrl + req.path;
     let headers = req.headers;
-    if(headers["x-accesstoken"]) {
+    if(fullPath == "/") {
+      res.redirect("https://toolslib.co");
+    } else if(fullPath.includes("/login") || fullPath.includes("/register") || fullPath == "/seed") {
+      next()
+    } else if(headers["x-accesstoken"]) {
       let db = mysql.makeConnection();
 
       db.connect();
