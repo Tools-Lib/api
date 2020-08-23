@@ -2,10 +2,27 @@ const express = require('express');
 const consola = require("consola");
 const bcrypt = require('bcrypt');
 const bodyParser = require('body-parser');
+const rateLimit = require("express-rate-limit");
+const helmet = require("helmet");
+const morgan = require("morgan");
+const cors = require("cors");
+const app = express();
 
+
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
+app.use(helmet()); // Seurity plugin
+app.use(cors()); // CORS
+// app.use(
+//   rateLimit({
+//     windowMs: 60 * 1000,
+//     max: 10,
+//     message: {status: "fail", body: { errors: [{message: "Please wait few minutes before trying again"}]}}
+//   })
+// );
 
 const mysql = require("./db/connect.js");
-const app = express();
+
 const port = 8080;
 
 
@@ -24,10 +41,14 @@ app.use(function iper(req, res, next) {
 
 app.use((req, res, next)=> {
     res.header("Access-Control-Allow-Origin", "https://toolslib.co");
-    res.header("Access-Control-Allow-Headers", "X-Requested-With")
+    res.header("Access-Control-Allow-Headers", "X-Requested-With");
+    res.header("Content-Type", "application/json");
+
+    // res.header("", "");
   	consola.info(`[${app.getDate().getHours() + ":" + app.getDate().getMinutes() + ":" + app.getDate().getSeconds() + " " +app.getDate().getMonth() + "/" + app.getDate().getDate() + "/" + app.getDate().getFullYear()}] [${req.method}] - [${app.getIP()}] => [${req.baseUrl + req.path}] `);
     let fullPath = req.baseUrl + req.path;
     let headers = req.headers;
+    // if(headers["User-Agent"] == "") return res.status(404).json({status: "fail", body: {errors:[{message: "UA mismatch"}]}})
     if(fullPath == "/") {
       res.redirect("https://toolslib.co");
     } else if(fullPath.includes("/login") || fullPath.includes("/register") || fullPath == "/seed") {
