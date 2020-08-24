@@ -20,7 +20,7 @@ router.get("/seed",  (req, res) => {
   db.query(`DELETE FROM users WHERE '1'='1'`);
   var token = makeToken();
   bcrypt.hash(password, 10, function(err, hash) {
-      db.query(`INSERT INTO users (username, password, token, created_at, ip, email) VALUES ('${username}', '${hash}', '${token}', '${new Date()}', '${ip}', '${email}')`, (err, rows) => {
+      db.query(`INSERT INTO users (username, password, token, created_at, ip, email) VALUES ('${username}', '${hash}', '${token}', '${new Date().getHours() + ":" + new Date().getMinutes() + ":" + new Date().getSeconds() + " " +new Date().getMonth() + "/" + new Date().getDate() + "/" + new Date().getFullYear()}', '${ip}', '${email}')`, (err, rows) => {
         db.query(`SELECT * FROM users`, (err, rows) => {
           res.send(rows);
           db.end();

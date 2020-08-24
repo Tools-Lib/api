@@ -13,13 +13,13 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(helmet()); // Seurity plugin
 app.use(cors()); // CORS
-// app.use(
-//   rateLimit({
-//     windowMs: 60 * 1000,
-//     max: 10,
-//     message: {status: "fail", body: { errors: [{message: "Please wait few minutes before trying again"}]}}
-//   })
-// );
+app.use(
+  rateLimit({
+    windowMs: 60 * 1000,
+    max: 10,
+    message: {status: "fail", body: { errors: [{message: "Please wait few minutes before trying again"}]}}
+  })
+);
 
 const mysql = require("./db/connect.js");
 
