@@ -10,10 +10,10 @@ module.exports.makeConnection = () => {
     database
   });
   con.on("connect", () => {
-    consola.info('['+ new Date().getHours() + ":" + new Date().getMinutes() + ":" + new Date().getSeconds() + " " +new Date().getMonth() + "/" + new Date().getDate() + "/" + new Date().getFullYear() +'] [DB]  - [CONNECT]    - [ID: ' + con.threadId + "]");
+    consola.info('['+ new Date().getHours() + ":" + new Date().getMinutes() + ":" + new Date().getSeconds() + " " +new Date().getMonth()+1 + "/" + new Date().getDate() + "/" + new Date().getFullYear() +'] [DB]  - [CONNECT]    - [ID: ' + con.threadId + "]");
   })
   con.on("end", () => {
-    consola.info('['+ new Date().getHours() + ":" + new Date().getMinutes() + ":" + new Date().getSeconds() + " " +new Date().getMonth() + "/" + new Date().getDate() + "/" + new Date().getFullYear() +'] [DB]  - [DISCONNECT] - [ID: ' + con.threadId + "]");
+    consola.info('['+ new Date().getHours() + ":" + new Date().getMinutes() + ":" + new Date().getSeconds() + " " +new Date().getMonth()+1 + "/" + new Date().getDate() + "/" + new Date().getFullYear() +'] [DB]  - [DISCONNECT] - [ID: ' + con.threadId + "]");
   })
    return con;
 }

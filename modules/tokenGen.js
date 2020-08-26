@@ -6,10 +6,12 @@ const makeToken = () => {
   let token = tokenGen(40);
   let db = mysql.makeConnection();
   db.query(`SELECT * FROM users where token='${token}'`, (err, rows) => {
-    if(!rows || !rows[0] || rows.length < 1) return token;
+    if(!rows || !rows[0] || rows.length < 1) {
+      db.end()
+      return token}
     else makeToken();
   });
-  return token
+  return token;
 }
 
 module.exports.makeToken = makeToken;

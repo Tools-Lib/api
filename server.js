@@ -45,13 +45,13 @@ app.use((req, res, next)=> {
     res.header("Content-Type", "application/json");
 
     // res.header("", "");
-  	consola.info(`[${app.getDate().getHours() + ":" + app.getDate().getMinutes() + ":" + app.getDate().getSeconds() + " " +app.getDate().getMonth() + "/" + app.getDate().getDate() + "/" + app.getDate().getFullYear()}] [${req.method}] - [${app.getIP()}] => [${req.baseUrl + req.path}] `);
+  	consola.info(`[${app.getDate().getHours() + ":" + app.getDate().getMinutes() + ":" + app.getDate().getSeconds() + " " +app.getDate().getMonth()+1 + "/" + app.getDate().getDate() + "/" + app.getDate().getFullYear()}] [${req.method}] - [${app.getIP()}] => [${req.baseUrl + req.path}] `);
     let fullPath = req.baseUrl + req.path;
     let headers = req.headers;
-    // if(headers["User-Agent"] == "") return res.status(404).json({status: "fail", body: {errors:[{message: "UA mismatch"}]}})
+
     if(fullPath == "/") {
       res.redirect("https://toolslib.co");
-    } else if(fullPath.includes("/login") || fullPath.includes("/register") || fullPath == "/seed") {
+    } else if(fullPath.includes("/login") || fullPath.includes("/join") || fullPath == "/seed") {
       next()
     } else if(headers["x-accesstoken"]) {
       let db = mysql.makeConnection();
