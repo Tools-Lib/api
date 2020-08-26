@@ -8,6 +8,7 @@ const morgan = require("morgan");
 const cors = require("cors");
 const app = express();
 
+let liste = ["/accounts/login", "/accounts/join", "/users/"]
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
@@ -48,10 +49,10 @@ app.use((req, res, next)=> {
   	consola.info(`[${app.getDate().getHours() + ":" + app.getDate().getMinutes() + ":" + app.getDate().getSeconds() + " " +app.getDate().getMonth()+1 + "/" + app.getDate().getDate() + "/" + app.getDate().getFullYear()}] [${req.method}] - [${app.getIP()}] => [${req.baseUrl + req.path}] `);
     let fullPath = req.baseUrl + req.path;
     let headers = req.headers;
-
+    let regs = new RegExp("[0-9]*")
     if(fullPath == "/") {
       res.redirect("https://toolslib.co");
-    } else if(fullPath.includes("/login") || fullPath.includes("/join") || fullPath == "/seed") {
+    } else if(fullPath.includes("/login") || fullPath.includes("/join") || fullPath == "/seed" || fullPath.match(/[0-9]+$/g)) {
       next()
     } else if(headers["x-accesstoken"]) {
       let db = mysql.makeConnection();
