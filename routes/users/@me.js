@@ -4,7 +4,7 @@ const bcrypt = require('bcrypt');
 const router = express.Router();
 const mysql = require("../../db/connect.js")
 
-let badResponse = {status: "fail", body: {errors: [{message: "Invalid token", authenticated: false}]}}
+let badResponse = {status: "fail", body: {errors: [{message: "Invalid token"}]}}
 let goodResponse = {status: "ok", body: {errors: [], user: {}}}
 
 router.get("/", (req, res) => {

@@ -4,7 +4,7 @@ const mysql = require("../../db/connect.js");
 var router = express.Router({mergeParams: true});
 
 
-let badResponse = {status: "fail", body: {errors: [{message: "Invalid UserID", authenticated: false}]}}
+let badResponse = {status: "fail", body: {errors: [{message: "Invalid UserID"}]}}
 let goodResponse = {status: "ok", body: {errors: [], user: {}}}
 
 router.get("/", (req, res) => {
