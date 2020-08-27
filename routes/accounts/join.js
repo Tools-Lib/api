@@ -94,7 +94,7 @@ function ValidatePassword(password) {
   // }
   // if(res == 0) return false;
   //
-  
+
   // 1 Symbol
   // res = 0
   // for (const c of password.split("")) {
@@ -132,3 +132,7 @@ function isExist(value, key) {
 }
 
 module.exports = router;
+module.exports.ValidatePassword = ValidatePassword;
+module.exports.ValidateEmail = ValidateEmail;
+module.exports.ValidateUsername = ValidateUsername;
+module.exports.isExist = isExist;

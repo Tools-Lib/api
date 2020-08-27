@@ -11,7 +11,7 @@ router.get("/", (req, res) => {
 
   let db = mysql.makeConnection();
   let token = req.headers["x-accesstoken"]
-  db.query("SELECT username, email, last_login, created_at FROM users WHERE token=?", [token], (err, rows) => {
+  db.query("SELECT LOWER(username) as username, email, last_login, created_at FROM users WHERE token=?", [token], (err, rows) => {
     if(err) throw err;
 
     if(!rows || !rows[0] || rows.length < 1) return res.status(401).json(badResponse);

@@ -11,7 +11,7 @@ router.get("/", (req, res) => {
   let id = req.params.id;
   let db = mysql.makeConnection();
 
-  db.query("SELECT username, email, last_login, created_at FROM users WHERE UID=?", [id], (err, rows) => {
+  db.query("SELECT LOWER(username), email, last_login, created_at FROM users WHERE UID=?", [id], (err, rows) => {
     if(err) throw err;
 
     if(!rows || !rows[0] || rows.length < 1) {
