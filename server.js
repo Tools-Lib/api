@@ -55,20 +55,16 @@ app.use((req, res, next)=> {
     } else if(fullPath.includes("/login") || fullPath.includes("/join") || fullPath == "/seed" || fullPath.match(/[0-9]+$/g)) {
       next()
     } else if(headers["x-accesstoken"]) {
-      let db = mysql.makeConnection();
 
-      db.connect();
-
-      db.query(`SELECT username FROM users WHERE token='${headers["x-accesstoken"]}'`, (err, rows) => {
-        if (err) throw err;
-        if(!rows || !rows[0] || rows.length < 1) {
-          res.status(403).json({status: "failed",body: { errors: [{message: "Invaild access token"}]}})
-          db.end();
-        } else {
-          db.end();
-          next();
-        }
+      mysql.getUserByToken(headers["x-accesstoken"], ["token"])
+      .then(rows => {
+        next();
       })
+      .catch(err => {
+        res.status(403).json({status: "failed",body: { errors: [{message: "Invaild access token"}]}})
+      })
+
+
 
 
     } else {
@@ -79,6 +75,10 @@ app.use((req, res, next)=> {
 })
 app.use("/", require("./routes"));
 
-app.listen(port, () => {
+app.listen(port, async () => {
   console.log(`API is listening at ${port}`);
+  // let {username, password, token, ip, email} = settings;
+  console.log(await mysql.deleteUser("7htmzepajdfgzaxlr4b4e5zmenvaoadac91dws4b"));
+
+
 });

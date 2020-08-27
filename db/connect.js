@@ -33,9 +33,14 @@ module.exports.getAllUsers = (keys=["*"]) => {
   let db = makeConnection();
   return new Promise((resolve, reject) => {
     db.query(`SELECT ${keys.join(", ")} from users`, (err, rows) => {
-      if(err) throw err;
-      db.end();
-      return resolve(rows);
+      if(err) return reject(err);
+      if(!rows || !rows[0] || rows.length < 1) {
+        db.end();
+        return reject(false);
+      } else {
+        db.end();
+        return resolve(rows);
+      }
     });
   });
 }
@@ -48,9 +53,31 @@ module.exports.getUserByUID = (UID, keys=["*"]) => {
   let db = makeConnection();
   return new Promise((resolve, reject) => {
     db.query(`SELECT ${keys.join(", ")} from users WHERE UID=?`, [UID], (err, rows) => {
-      if(err) throw err;
-      db.end();
-      return resolve(rows);
+      if(err) return reject(err);
+      if(!rows || !rows[0] || rows.length < 1) {
+        db.end();
+        return reject(false);
+      } else {
+        db.end();
+        return resolve(rows);
+      }
+    });
+  });
+}
+
+module.exports.getUserByUsername = (token, keys=["*"]) => {
+  let db = makeConnection();
+  return new Promise((resolve, reject) => {
+    db.query(`SELECT ${keys.join(", ")} from users WHERE username=?`, [token], (err, rows) => {
+      if(err) return reject(err);
+      if(!rows || !rows[0] || rows.length < 1) {
+        db.end();
+        return reject(false);
+      } else {
+        db.end();
+        return resolve(rows);
+      }
+
     });
   });
 }
@@ -59,9 +86,15 @@ module.exports.getUserByToken = (token, keys=["*"]) => {
   let db = makeConnection();
   return new Promise((resolve, reject) => {
     db.query(`SELECT ${keys.join(", ")} from users WHERE token=?`, [token], (err, rows) => {
-      if(err) throw err;
-      db.end();
-      return resolve(rows);
+      if(err) return reject(err);
+      if(!rows || !rows[0] || rows.length < 1) {
+        db.end();
+        return reject(false);
+      } else {
+        db.end();
+        return resolve(rows);
+      }
+
     });
   });
 }
@@ -70,7 +103,7 @@ const checkUserColumn = (col) => {
   let db = makeConnection();
   return new Promise((resolve, reject) => {
     db.query("SHOW COLUMNS FROM `users` LIKE ?", [col], (err, exist) => {
-      if(err) throw err;
+      if(err) return reject(err);
       if(!exist || !exist[0] || exist.length < 1) {
         db.end();
         resolve(false);
@@ -101,8 +134,13 @@ module.exports.updateUser = async (settings, token) => {
       }
       await sleep(100);
     }
-    let user = await module.exports.getUserByToken(token, ["LOWER(username) as username", 'email', 'last_login', 'created_at']);
-    return resolve(user[0]);
+    module.exports.getUserByToken(token, ["LOWER(username) as username", 'email', 'last_login', 'created_at'])
+    .then(rows => {
+      return resolve(rows[0]);
+    })
+    .catch(err => {
+      return reject(err);
+    });
   })
 }
 
@@ -111,15 +149,27 @@ module.exports.createUser = (settings) => {
   let db = makeConnection();
   return new Promise(async (resolve, reject) => {
     db.query(`INSERT INTO users (username, password, token, created_at, last_login, ip, email) VALUES (?, ?, ?, ?, ?, ?, ?)`, [username, password, token, date(), date(), ip, email])
-    let rows = await module.exports.getUserByToken(token, ["token"]);
-    return resolve(rows);
+    module.exports.getUserByToken(token, ["token"])
+    .then(rows => {
+      return resolve(rows[0]);
+    })
+    .catch(err => {
+      return reject(err);
+    });
   });
 }
 
 module.exports.deleteUser = (token) => {
   let db = makeConnection();
   return new Promise(async (resolve, reject) => {
-    db.query(`DELETE FROM users WHERE token=?`, [token]);
-    return resolve(true);
+    module.exports.getUserByToken(token, ["token"])
+    .then(rows => {
+      db.query(`DELETE FROM users WHERE token=?`, [token]);
+      return resolve(true);
+    })
+    .catch(err => {
+      return reject(err);
+    });
+
   });
 }

@@ -25,14 +25,16 @@ router.post("/", async (req, res) => {
   if(await isExist(username, 'username')) return res.status(406).json(usedUsernameResponse);
   if(await isExist(email, 'email')) return res.status(406).json(usedEmailResponse);
 
-  let db = mysql.makeConnection();
-
   var token = makeToken();
   bcrypt.hash(password, 10, function(err, hash) {
-    db.query(`INSERT INTO users (username, password, token, created_at, ip, email, last_login) VALUES ('${username}', '${hash}', '${token}', '${new Date().getHours() + ":" + new Date().getMinutes() + ":" + new Date().getSeconds() + " " +new Date().getMonth()+1 + "/" + new Date().getDate() + "/" + new Date().getFullYear()}', '${ip}', '${email}', '${new Date().getHours() + ":" + new Date().getMinutes() + ":" + new Date().getSeconds() + " " +new Date().getMonth()+1 + "/" + new Date().getDate() + "/" + new Date().getFullYear()}')`);
-    db.end();
-    goodResponse.body.token = token;
-    res.json(goodResponse);
+
+    mysql.createUser({username, email, password:hash, token, ip})
+    .then(data => {
+      goodResponse.body.token = token;
+      res.json(goodResponse);
+    })
+    .catch(err => res.json(400).status(err))
+
   });
 });
 

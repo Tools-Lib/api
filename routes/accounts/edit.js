@@ -26,7 +26,7 @@ router.post("/", async (req, res) => {
   delete settings['ip'];
   // delete settings[''];
 
-  let db = mysql.makeConnection();
+  // let db = mysql.makeConnection();
 
   for(let [key, value] of Object.entries(settings)) {
     if(key == "username") {
@@ -39,67 +39,14 @@ router.post("/", async (req, res) => {
       if(await isExist(value, 'email')) return res.status(406).json(usedEmailResponse);
     }
   }
+  mysql.updateUser(settings, token)
+  .then(user => {
+    res.json(user);
+  })
+  .catch(err => {
+    res.status(400).json(err);
+  })
 
-  db.query("SELECT username, email, last_login, created_at FROM users WHERE token=?", [token], async (err, rows) => {
-    if(err) throw err;
-    if(!rows || !rows[0] || rows.length < 1) {
-      db.end();
-      badResponse.body.errors[0].message = "Invaild User";
-      res.status(401).json(badResponse);
-      return;
-    } else {
-      let i = 0;
-      for(let [key, value] of Object.entries(settings)) {
-        i++
-
-          db.query("SHOW COLUMNS FROM `users` LIKE ?", [key], (err, exist) => {
-            if(err) throw err;
-            if(!exist || !exist[0] || exist.length < 1) {
-              db.end();
-              badResponse.body.errors[0].message = "Invaild Option " + key;
-              res.status(406).json(badResponse);
-              return;
-            } else {
-              if(key == "password") {
-                // console.log("yay");
-                  bcrypt.hash(value, 10, function(err, hash) {
-                    db.query(`UPDATE users SET ${key}=? WHERE token=?`, [hash, token], (err, rows) => {
-                      if(err) {
-                        if(err.code == "ER_DUP_ENTRY") {
-                          db.end();
-                          badResponse.body.errors[0].message = "This " + key + " is already exist";
-                          res.status(406).json(badResponse);
-                          return;
-                        }
-                      }
-                    });
-                  });
-              } else {
-                db.query(`UPDATE users SET ${key}=? WHERE token=?`, [value, token], (err, rows) => {
-                  if(err) {
-                    if(err.code == "ER_DUP_ENTRY") {
-                      db.end();
-                      badResponse.body.errors[0].message = "This " + key + " is already exist";
-                      res.status(406).json(badResponse);
-                      return;
-                    }
-                  }
-                });
-              }
-
-            }
-          });
-await sleep(100);
-      }
-      db.query("SELECT LOWER(username) as username, email, last_login, created_at FROM users WHERE token=?", [token], (err, user) => {
-        db.end();
-        // console.log(user);
-        goodResponse.body.user = user[0];
-        res.send(goodResponse);
-      });
-    }
-  });
-  // res.send(settings)
 });
 
 module.exports = router;

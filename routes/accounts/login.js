@@ -13,28 +13,20 @@ router.post("/", (req, res) => {
   const password = req.body.password;
   if(!username || !password) return res.status(400).json(badResponse);
   let ip = req.headers['cf-connecting-ip'] || req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-  let db = mysql.makeConnection();
-  db.query(`SELECT UID, username, password, token FROM users WHERE username=?`, [username], (err, rows) => {
-    if(err) throw err;
-    if(!rows || !rows[0] || rows.length < 1) {
-      return res.status(400).json(badUsernameResponse);
-      db.end();
-    } else {
-      bcrypt.compare(password, rows[0].password, function(err, result) {
-        if(result) {
-          goodResponse.body.token = rows[0].token
-          res.json(goodResponse);
-                                       // console.log(new Date().getHours() + ":" + new Date().getMinutes() + ":" + new Date().getSeconds() + " " +new Date().getMonth()+1 + "/" + new Date().getDate() + "/" + new Date().getFullYear());
-          db.query(`UPDATE users SET last_login='${new Date().getHours() + ":" + new Date().getMinutes() + ":" + new Date().getSeconds() + " " +new Date().getMonth()+1 + "/" + new Date().getDate() + "/" + new Date().getFullYear()}' WHERE UID=${rows[0].UID}`);
-          db.query(`UPDATE users SET ip='${ip}' WHERE UID=${rows[0].UID}`);
-          db.end();
-        } else {
-          return res.status(400).json(badResponse);
-          db.end();
-        }
-      });
-    }
-
+  mysql.getUserByUsername(username)
+  .then(rows => {
+    bcrypt.compare(password, rows[0].password, function(err, result) {
+      if(result) {
+        goodResponse.body.token = rows[0].token
+        res.json(goodResponse);
+        mysql.updateUser({last_login: mysql.getDate(), ip}, rows[0].token)
+      } else {
+        return res.status(400).json(badResponse);
+      }
+    });
+  })
+  .catch(err => {
+    return res.status(400).json(badUsernameResponse);
   });
 });
 
