@@ -68,38 +68,39 @@ function ValidatePassword(password) {
   let alphabet = lowwerLetters + upperLetters + symbols + numbers;
   let lowerRange = 31, upperRange = 126;
 
-  if(password.length < 8 || password.length > 32) return false;
+  if(password.length < 6 || password.length > 32) return false;
 
+  // 1 Lowercase Charactar
 
-  let res = 0
-  for (const c of password.split("")) {
-    if(lowwerLetters.includes(c)) res++;
-  }
-  if(res == 0) return false;
+  // let res = 0
+  // for (const c of password.split("")) {
+  //   if(lowwerLetters.includes(c)) res++;
+  // }
+  // if(res == 0) return false;
+  //
 
+  // 1 Uppercase Charactar
+  // res = 0
+  // for (const c of password.split("")) {
+  //   if(upperLetters.includes(c)) res++;
+  // }
+  // if(res == 0) return false;
+  //
 
-
-  res = 0
-  for (const c of password.split("")) {
-    if(upperLetters.includes(c)) res++;
-  }
-  if(res == 0) return false;
-
-
-
-  res = 0
-  for (const c of password.split("")) {
-    if(numbers.includes(c)) res++;
-  }
-  if(res == 0) return false;
-
-
-
-  res = 0
-  for (const c of password.split("")) {
-    if(symbols.includes(c)) res++;
-  }
-  if(res == 0) return false;
+  // 1 Number
+  // res = 0
+  // for (const c of password.split("")) {
+  //   if(numbers.includes(c)) res++;
+  // }
+  // if(res == 0) return false;
+  //
+  
+  // 1 Symbol
+  // res = 0
+  // for (const c of password.split("")) {
+  //   if(symbols.includes(c)) res++;
+  // }
+  // if(res == 0) return false;
 
 
   for (const c in password.split("")) {
